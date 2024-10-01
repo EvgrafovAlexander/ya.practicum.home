@@ -1,0 +1,46 @@
+@startuml
+class User {
+  +String name
+  +String email
+  +List<House> houses
+  +void register()
+  +void login()
+}
+
+class House {
+  +Int id
+  +String address
+  +List<Device> devices
+}
+
+class Device {
+  +Int id
+  +Int type_id
+  +Int house_id
+  +Str serial_number
+  +Bool status
+  +Float temperature
+  +void turn_on()
+  +void turn_off()
+  +void get_data()
+  +void set_temperature()
+}
+
+class DeviceType {
+  +Int id
+  +Str description
+}
+
+class TelemetryData {
+  +Int device_id
+  +Bool status
+  +Float temperature
+}
+
+
+User "1" -- "0..*" House : has
+House "1" -- "0..*" Device : includes
+Device "1" -- "1" DeviceType : has
+Device "1" -- "0..*" TelemetryData : generates
+
+@enduml
