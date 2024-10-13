@@ -1,0 +1,19 @@
+@startuml
+title SmartHome Context Diagram
+
+top to bottom direction
+
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+Person(user, "Пользователь", "Пользователь системы умного дома")
+System(DeviceManagementSystem, "Управление устройствами", "Система управления вкл/выкл и температурным режимом отопительных устройств")
+System(MonitoringSystem, "Мониторинг температуры и состояний", "Система сбора температурных показателей с отопительных устройств")
+
+System_Ext(devices, "Отопительное устройство", "Климатическая установка поддержания заданной температуры")
+
+Rel(user, DeviceManagementSystem, "Включает/выключает устройство и задаёт желаемую температуру")
+Rel(user, MonitoringSystem, "Запрашивает данные о текущей температуре и состоянии устройств")
+Rel(DeviceManagementSystem,devices,"Управляет состоянием устройства и температурным режимом")
+Rel(MonitoringSystem,devices,"Получает показания температурных датчиков и состояния устройств")
+
+@enduml

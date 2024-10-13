@@ -1,0 +1,44 @@
+@startuml
+title SmartHome Container Diagram
+
+top to bottom direction
+
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+Person(user, "Пользователь", "Пользователь системы умного дома")
+System(SmartHomeSystem, "SmartHome System", "Система управления устройствами 'Умного дома'")
+
+Container_Boundary(SmartHomeSystem, "SmartHome System") {
+  Container(WebApp, "Web Application (outsourcing)", "Java, Spring", "Веб-сайт SmartHome")
+  Container(MobileApp, "Mobile Application (outsourcing)", "Kotlin, Swift", "Мобильное приложение SmartHome")
+  Container(APIGateway, "API GateWay", "", "Маршрутизатор запросов")
+  Container(AuthService, "Сервис авторизации", "", "Регистрация/авторизация/аутентификация пользователей")
+  Container(DeviceRegisterService, "Сервис регистрации устройств", "", "Добавление/редактирование/удаление устройств пользователя")
+  Container_Boundary(DeviceModule, "SmartHome Device Module") {
+    Container(DeviceManagementService, "Сервис управления устройствами", "", "Отправка управляющих команд на устройства")
+    Container(DeviceMonitoringService, "Сервис мониторинга устройств", "", "Сбор данных с устройств")
+    Container(DeviceCommandDatabase, "БД переданных команд", "PostgreSQL", "Содержит данные о командах, переданных на устройства")
+    Container(TelemetryDatabase, "БД телеметрии", "ClickHouse", "Содержит данные о телеметрии, полученной с устройств")
+  }
+  Container(AuthDatabase, "БД пользователей", "PostgreSQL", "Содержит данные о пользователях")
+  Container(DeviceDatabase, "БД устройств", "PostgreSQL", "Содержит данные об устройствах")
+}
+
+System_Ext(devices, "Отопительное устройство", "Климатическая установка поддержания заданной температуры")
+
+Rel(user, WebApp, "Взаимодействует с системой")
+Rel(user, MobileApp, "Взаимодействует с системой")
+Rel(WebApp, APIGateway, "Обрабатывает запросы")
+Rel(MobileApp, APIGateway, "Обрабатывает запросы")
+Rel(APIGateway, AuthService, "Выполняет авторизацию")
+Rel(APIGateway, DeviceRegisterService, "Редактирование перечня устройств пользователя")
+Rel(APIGateway, DeviceManagementService, "Отдаёт команды на управление")
+Rel(APIGateway, DeviceMonitoringService, "Получает данные телеметрии")
+Rel(AuthService, AuthDatabase, "Чтение/запись данных о пользователях")
+Rel(DeviceRegisterService, DeviceDatabase, "Чтение/запись данных об устройствах пользователя")
+Rel(DeviceManagementService, DeviceCommandDatabase, "Чтение/запись данных о командах")
+Rel(DeviceMonitoringService, TelemetryDatabase, "Чтение/запись данных о полученной телеметрии")
+Rel(DeviceManagementService, devices, "Команды на управление")
+Rel(DeviceMonitoringService, devices, "Получение телеметрии")
+
+@enduml
