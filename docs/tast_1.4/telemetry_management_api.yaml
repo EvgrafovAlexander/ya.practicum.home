@@ -1,0 +1,184 @@
+openapi: 3.1.0
+info:
+  title: TelemetryManagement
+  version: 0.1.0
+paths:
+  '/devices/{device_id}/telemetry/latest':
+    get:
+      tags:
+        - telemetry
+      summary: Get Last Telemetry Value
+      description: Получает последние данные телеметрии устройства по его ID
+      operationId: get_last_telemetry_value_devices__device_id__telemetry_latest_get
+      parameters:
+        - name: device_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Device Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TelemetryRow'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  '/devices/{device_id}/telemetry':
+    get:
+      tags:
+        - telemetry
+      summary: Get History Telemetry Values
+      description: Получает исторические данные телеметрии устройства по его ID и временному интервалу
+      operationId: get_history_telemetry_values_devices__device_id__telemetry_get
+      parameters:
+        - name: device_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Device Id
+        - name: dt_from
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date-time
+            title: Dt From
+        - name: dt_to
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date-time
+            title: Dt To
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TelemetryRow'
+                title: Response Get History Telemetry Values Devices  Device Id  Telemetry Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /telemetry:
+    post:
+      tags:
+        - telemetry
+      summary: Save Telemetry
+      description: 'РЎРѕС…СЂР°РЅСЏРµС‚ РґР°РЅРЅС‹Рµ С‚РµР»РµРјРµС‚СЂРёРё, СЂР°РЅРµРµ РїРѕР»СѓС‡РµРЅРЅС‹Рµ РјРѕРЅРѕР»РёС‚РѕРј'
+      operationId: save_telemetry_telemetry_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TelemetryRow'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Result'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /:
+    get:
+      summary: Root
+      operationId: root__get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                title: Response Root  Get
+components:
+  schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    Result:
+      properties:
+        success:
+          type: boolean
+          title: True/False
+      type: object
+      required:
+        - success
+      title: Result
+      description: Модель результата успешного выполнения запроса
+    TelemetryRow:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Row id
+        device_id:
+          type: string
+          format: uuid
+          title: Device id
+        value:
+          anyOf:
+            - type: integer
+            - type: number
+          title: Value
+        timestamp:
+          type: string
+          format: date-time
+          title: Timestamp
+      type: object
+      required:
+        - device_id
+        - value
+        - timestamp
+      title: TelemetryRow
+      description: Запись со значением телеметрии датчика
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+              - type: string
+              - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+      type: object
+      required:
+        - loc
+        - msg
+        - type
+      title: ValidationError
