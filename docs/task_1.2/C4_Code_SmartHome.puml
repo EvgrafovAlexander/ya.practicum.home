@@ -1,0 +1,32 @@
+@startuml
+title TelemetryManagement Save Telemetry Flow Code Diagram
+
+top to bottom direction
+
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+class TelemetryRow {
+  +UUID id
+  +UUID device_id
+  +str|int value
+  +datetime timestamp
+}
+
+class SaveTelemetryController {
+  +UUID device_id
+  +TelemetryRow telemetry_row
+  +Session session
+  +void call()
+}
+
+class TelemetryRepository {
+  +Model model
+  +Telemetry get_last_telemetry_row()
+  +List[Telemetry] get_history_telemetry_rows()
+  +void save_telemetry_row()
+}
+
+TelemetryRow "1" -- "1" SaveTelemetryController : call
+SaveTelemetryController "1" -- "1" TelemetryRepository : call
+
+@enduml

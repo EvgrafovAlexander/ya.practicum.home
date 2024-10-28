@@ -1,0 +1,208 @@
+openapi: 3.1.0
+info:
+  title: DeviceManagement
+  version: 0.1.0
+paths:
+  '/devices/{device_id}':
+    get:
+      tags:
+        - devices
+      summary: Get Device Info
+      description: Получает подробную информацию об устройстве по его ID
+      operationId: get_device_info_devices__device_id__get
+      parameters:
+        - name: device_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Device Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeviceInfo'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  '/devices/{device_id}/status':
+    put:
+      tags:
+        - devices
+      summary: Update Device Status
+      description: Обновляет состояние устройства
+      operationId: update_device_status_devices__device_id__status_put
+      parameters:
+        - name: device_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Device Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateStatus'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateResult'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  '/devices/{device_id}/commands':
+    put:
+      tags:
+        - devices
+      summary: Send Command To Device
+      description: Отправляет команду на устройство
+      operationId: send_command_to_device_devices__device_id__commands_put
+      parameters:
+        - name: device_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Device Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Command'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /:
+    get:
+      summary: Root
+      operationId: root__get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                title: Response Root  Get
+components:
+  schemas:
+    Command:
+      properties:
+        command:
+          type: string
+          title: Device command
+        params:
+          type: string
+          title: Command parameters
+      type: object
+      required:
+        - command
+        - params
+      title: Command
+      description: Модель отправки команды на устройство
+    DeviceInfo:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Device id
+        group_id:
+          type: string
+          format: uuid
+          title: Group id
+        house_id:
+          type: string
+          format: uuid
+          title: House id
+        serial_number:
+          type: string
+          format: uuid
+          title: Serial number
+        status:
+          type: boolean
+          title: On/Off
+      type: object
+      required:
+        - id
+        - group_id
+        - house_id
+        - serial_number
+        - status
+      title: DeviceInfo
+      description: Модель информации об устройстве
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    UpdateResult:
+      properties:
+        success:
+          type: boolean
+          title: True/False
+      type: object
+      required:
+        - success
+      title: UpdateResult
+      description: Модель результата обновления состояния устройства
+    UpdateStatus:
+      properties:
+        status:
+          type: boolean
+          title: On/Off
+      type: object
+      required:
+        - status
+      title: UpdateStatus
+      description: Модель обновления состояния устройства (вкл/выкл)
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+              - type: string
+              - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+      type: object
+      required:
+        - loc
+        - msg
+        - type
+      title: ValidationError
